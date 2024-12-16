@@ -15,6 +15,8 @@ public class Projectile : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        //control the directory
         rb = GetComponent<Rigidbody>();
         Vector3 forceDirection = (transform.up + transform.forward) * throwForce;
         rb.AddForce(forceDirection, ForceMode.Impulse);
@@ -25,9 +27,12 @@ public class Projectile : MonoBehaviour
     {
         
     }
-
+    
     private void OnCollisionEnter(Collision collision)
     {
+        
+        //collide = ?
+        Debug.Log(collision.gameObject.name);
         if (collision.gameObject.tag == "Ground")
         {
             Debug.Log("explode");

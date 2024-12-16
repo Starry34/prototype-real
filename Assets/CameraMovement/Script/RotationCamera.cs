@@ -5,13 +5,13 @@ using UnityEngine;
 public class RotationCamera : MonoBehaviour
 {
     public Transform playerBody;
-    public float mouseSensitivityY = 100.0f;
-    public float mouseSensitivityX = 1000.0f;
+    private float mouseSensitivityY = 100.0f;
+    private float mouseSensitivityX = 500.0f;
     private float xRotation = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
-
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
