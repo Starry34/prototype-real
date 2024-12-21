@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SojaExiles
 
@@ -12,9 +13,11 @@ namespace SojaExiles
 		public bool open;
 		public Transform Player;
 
+		private string levelToLoad;
+
 		void Start()
 		{
-			open = false;
+			
 		}
 
 		void OnMouseOver()
@@ -23,50 +26,25 @@ namespace SojaExiles
 				if (Player)
 				{
 					float dist = Vector3.Distance(Player.position, transform.position);
-					if (dist < 15)
+					if (dist < 3)
 					{
-						if (open == false)
-						{
-							if (Input.GetMouseButtonDown(0))
+							if (Input.GetKeyDown(KeyCode.E))
 							{
-								StartCoroutine(opening());
+								levelToLoad = "Level 1";
+								StartCoroutine(teleportToLab());
+								SceneManager.LoadScene(levelToLoad);
 							}
-						}
-						else
-						{
-							if (open == true)
-							{
-								if (Input.GetMouseButtonDown(0))
-								{
-									StartCoroutine(closing());
-								}
-							}
-
-						}
-
 					}
+
 				}
 
 			}
 
+			IEnumerator teleportToLab()
+			{
+				yield return new WaitForSeconds(3.0f);
+			}
+
 		}
-
-		IEnumerator opening()
-		{
-			print("you are opening the door");
-			openandclose1.Play("Opening 1");
-			open = true;
-			yield return new WaitForSeconds(.5f);
-		}
-
-		IEnumerator closing()
-		{
-			print("you are closing the door");
-			openandclose1.Play("Closing 1");
-			open = false;
-			yield return new WaitForSeconds(.5f);
-		}
-
-
 	}
 }
