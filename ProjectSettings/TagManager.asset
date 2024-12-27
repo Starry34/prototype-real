@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Boot
+  - Cash
   layers:
   - Default
   - TransparentFX

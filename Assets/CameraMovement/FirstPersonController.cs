@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Net.Sockets;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class FirstPersonController : MonoBehaviour
 {
     public bool CanMove {  get; private set; } = true;
     private bool isSprinting => canSprint && Input.GetKey(sprintKey) & characterController.isGrounded;
-    private bool shouldJump => Input.GetKey(jumpKey) && characterController.isGrounded;
+    private bool shouldJump => Input.GetKey(jumpKey);
     private bool shouldCrouch => Input.GetKeyDown(crouchKey) && !duringCrouchAnimation && characterController.isGrounded;
 
     [Header("Functional Options")]
@@ -38,8 +39,8 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField, Range(1, 100)] private float lowerLookLimit = 80.0f;
 
     [Header("Jumping Parameters")]
-    [SerializeField] private float jumpForce = 6.0f;
-    [SerializeField] private float gravity = 25.0f;
+    [SerializeField] private float jumpForce = 3.0f;
+    [SerializeField] private float gravity = 9.81f;
 
     [Header("Crouch Parameters")]
     //crouch height
@@ -61,6 +62,21 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float sprintBobAmount = 0.1f;
     [SerializeField] private float crouchBobSpeed = 8f;
     [SerializeField] private float crouchBobAmount = 0.025f;
+
+    [Header("Coyote Time & jump buffer")]
+    [SerializeField] private float CoyoteTime = 0.4f;
+    [SerializeField] private float CoyoteTimeCounter = 0.0f;
+    [SerializeField] private float jumpBufferTime = 0.2f;
+    [SerializeField] private float jumpBufferCounter;
+
+     
+    [Header("Jumping boots Parameters")]
+    [SerializeField] private static bool JumpBoots = false;
+    [SerializeField] private float BootForce = 7.5f;
+    [SerializeField] private float walkBootSpeed = 4.5f;
+    [SerializeField] private float sprintBootSpeed = 9.0f;
+    [SerializeField] private float crouchBootSpeed = 2.5f;
+
 
     private float defaultYPos = 0;
     private float timer;
@@ -110,16 +126,41 @@ public class FirstPersonController : MonoBehaviour
         Cursor.visible = false;
     }
 
+    void Start()
+    {
+
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (CanMove)
         {
-            HandleMovement();
-            HandleMouselock();
+            if (JumpBoots == true)
+            {
+                HandleBootMovement();
+                HandleMouselock();
+            }
+
+            else
+            {
+                HandleMovement();
+                HandleMouselock();
+
+            }
             
             if (canJump)
-                HandleJump();
+            {
+                if (JumpBoots == true)
+                {
+                    HandleJumpBoots();
+                }
+                else
+                {
+                    HandleJump();
+
+                }
+            }
 
             if (canCrouch)
                 HandleCrouch();
@@ -139,6 +180,20 @@ public class FirstPersonController : MonoBehaviour
             currentInput = new Vector2((isCrouching ? crouchSpeed : isSprinting ? sprintSpeed : walkSpeed) * Input.GetAxisRaw("Vertical"), (isCrouching ? crouchSpeed : isSprinting ? sprintSpeed : walkSpeed) * Input.GetAxisRaw("Horizontal")).normalized;
 
             float moveDirectionY = moveDirection.y;
+            if (characterController.isGrounded)
+                moveDirection = (transform.TransformDirection(Vector3.forward) * currentInput.x) + (transform.TransformDirection(Vector3.right) * currentInput.y);
+            moveDirection.y = moveDirectionY;
+
+        }
+    }
+    private void HandleBootMovement()
+    {
+        //the .normalized makes it diagnol movement not being faster
+        if (characterController.isGrounded)
+        {
+            currentInput = new Vector2((isCrouching ? crouchBootSpeed : isSprinting ? sprintBootSpeed : walkBootSpeed) * Input.GetAxisRaw("Vertical"), (isCrouching ? crouchBootSpeed : isSprinting ? sprintBootSpeed : walkBootSpeed) * Input.GetAxisRaw("Horizontal")).normalized;
+
+            float moveDirectionY = moveDirection.y;
             moveDirection = (transform.TransformDirection(Vector3.forward) * currentInput.x) + (transform.TransformDirection(Vector3.right) * currentInput.y);
             moveDirection.y = moveDirectionY;
 
@@ -156,9 +211,71 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleJump()
     {
-        if (shouldJump)
+
+        if (characterController.isGrounded)
+        {
+            CoyoteTimeCounter = CoyoteTime;
+
+        }
+        else
+        {
+            CoyoteTimeCounter -= Time.deltaTime;
+        }
+
+        if ((shouldJump))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+        if (CoyoteTimeCounter > 0.0f && jumpBufferCounter > 0.0f)
+        {
             moveDirection.y = jumpForce;
-    } 
+
+            jumpBufferCounter = 0.0f;
+        }
+        if ((shouldJump) && moveDirection.y > 0.0f)
+        {
+
+            CoyoteTimeCounter = 0.0f;
+        }
+
+    }
+
+    private void HandleJumpBoots()
+    {
+        if (characterController.isGrounded)
+        {
+            CoyoteTimeCounter = CoyoteTime;
+
+        }
+        else
+        {
+            CoyoteTimeCounter -= Time.deltaTime;
+        }
+
+        if ((shouldJump))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+        if (CoyoteTimeCounter > 0.0f && jumpBufferCounter > 0.0f)
+        {
+            moveDirection.y = BootForce;
+
+            jumpBufferCounter = 0.0f;
+        }
+        if ((shouldJump) && moveDirection.y > 0.0f)
+        {
+
+            CoyoteTimeCounter = 0.0f;
+        }
+    }
     private void HandleCrouch()
     {
         if (shouldCrouch)
@@ -181,16 +298,27 @@ public class FirstPersonController : MonoBehaviour
     }
     private void ApplyFinalMovement()
     {
-        if(!characterController.isGrounded)
-            moveDirection.y -= gravity *Time.deltaTime;
+        if (!characterController.isGrounded)
+        {
+            moveDirection.y -= gravity * Time.deltaTime;
+        }
         
         if(characterController.velocity.y < -1 && characterController.isGrounded)
-            moveDirection.y = 0;
+            moveDirection.y = -0.5f;
 
-        if(WillSlideOnSlopes && IsSliding)
+        if (WillSlideOnSlopes && IsSliding)
             moveDirection += new Vector3(hitPointNormal.x , -hitPointNormal.y , hitPointNormal.z) * slopeSpeed;
 
-        characterController.Move((isCrouching ? crouchSpeed : isSprinting ? sprintSpeed : walkSpeed) * moveDirection * Time.deltaTime);
+        if (JumpBoots == true)
+        {
+            characterController.Move((isCrouching ? crouchBootSpeed : isSprinting ? sprintBootSpeed : walkBootSpeed) * moveDirection * Time.deltaTime);
+        }
+        else
+        {
+            characterController.Move((isCrouching ? crouchSpeed : isSprinting ? sprintSpeed : walkSpeed) * moveDirection * Time.deltaTime);
+
+        }
+        
     }
 
     private IEnumerator CrouchStand()
@@ -220,5 +348,20 @@ public class FirstPersonController : MonoBehaviour
         isCrouching = !isCrouching;
 
         duringCrouchAnimation = false;
+    }
+
+    public void OnTriggerEnter(Collider collisionInfo)
+    {
+        if (collisionInfo.gameObject.tag == "Boot")
+        {
+            JumpBoots = true;
+            Destroy(collisionInfo.gameObject);
+        }
+        if (collisionInfo.gameObject.tag == "Cash")
+        {
+            Debug.Log("you picked the cash");
+            CashCollect.charge++;
+            Destroy(collisionInfo.gameObject);
+        }
     }
 }

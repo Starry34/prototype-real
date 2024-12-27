@@ -9954,8 +9954,8 @@ MonoBehaviour:
   lookSpeedy: 2
   upperLookLimit: 80
   lowerLookLimit: 80
-  jumpForce: 4
-  gravity: 25
+  jumpForce: 2
+  gravity: 13
   crouchHeight: 0.01
   standingHeight: 0.5
   timeToCrouch: 0.25
@@ -9967,6 +9967,7 @@ MonoBehaviour:
   sprintBobAmount: 0.1
   crouchBobSpeed: 8
   crouchBobAmount: 0.025
+  BootForce: 6
 --- !u!1001 &1408809166
 PrefabInstance:
   m_ObjectHideFlags: 0
