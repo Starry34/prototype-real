@@ -7,14 +7,15 @@ namespace SojaExiles
 {
 	public class opencloseDoor : MonoBehaviour
 	{
-
-		public Animator openandclose;
+        public Animator openandclose;
 		public bool open;
 		public Transform Player;
+        public GameObject imgOpenDoor;
 
-		void Start()
+
+        void Start()
 		{
-			open = false;
+            open = false;
 		}
 
 		void OnMouseOver()
@@ -23,15 +24,20 @@ namespace SojaExiles
 				if (Player)
 				{
 					float dist = Vector3.Distance(Player.position, transform.position);
-					if (dist < 5)
+					if (dist < 3)
 					{
 						if (open == false)
 						{
-							if (Input.GetKeyDown(KeyCode.E))
+                            imgOpenDoor.SetActive(true);
+
+                            if (Input.GetKeyDown(KeyCode.E))
 							{
 								StartCoroutine(opening());
-							}
-						}
+                                imgOpenDoor.SetActive(false);
+
+
+                            }
+                        }
 						else
 						{
 							if (open == true)
@@ -56,17 +62,20 @@ namespace SojaExiles
 			print("you are opening the door");
 			openandclose.Play("Opening");
 			open = true;
-			yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(.5f);
 		}
-
 		IEnumerator closing()
 		{
 			print("you are closing the door");
 			openandclose.Play("Closing");
 			open = false;
-			yield return new WaitForSeconds(.5f);
+            yield return new WaitForSeconds(.5f);
 		}
 
+        public void OnMouseExit()
+        {
+            imgOpenDoor.SetActive(false);
 
-	}
+        }
+    }
 }

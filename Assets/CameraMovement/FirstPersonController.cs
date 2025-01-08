@@ -8,7 +8,9 @@ using UnityEngine;
 public class FirstPersonController : MonoBehaviour
 {
     public bool CanMove {  get; private set; } = true;
-    private bool isSprinting => canSprint && Input.GetKey(sprintKey) & characterController.isGrounded;
+
+    public bool playerIsAlive = true;
+    private bool isSprinting => canSprint && Input.GetKey(sprintKey) && characterController.isGrounded;
     private bool shouldJump => Input.GetKey(jumpKey);
     private bool shouldCrouch => Input.GetKeyDown(crouchKey) && !duringCrouchAnimation && characterController.isGrounded;
 
@@ -77,10 +79,9 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float sprintBootSpeed = 9.0f;
     [SerializeField] private float crouchBootSpeed = 2.5f;
 
-
     private float defaultYPos = 0;
     private float timer;
-
+    public LogicScript logic;
     //sliding parameters
     private Vector3 hitPointNormal;
 
@@ -134,7 +135,7 @@ public class FirstPersonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (CanMove)
+        if (CanMove && playerIsAlive)
         {
             if (JumpBoots == true)
             {
@@ -362,6 +363,17 @@ public class FirstPersonController : MonoBehaviour
             Debug.Log("you picked the cash");
             CashCollect.charge++;
             Destroy(collisionInfo.gameObject);
+        }
+    }
+
+    public void OnControllerColliderHit(ControllerColliderHit collision)
+    {
+        if (collision.gameObject.tag == "Black")
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            logic.gameOver();
+            playerIsAlive = false;
         }
     }
 }

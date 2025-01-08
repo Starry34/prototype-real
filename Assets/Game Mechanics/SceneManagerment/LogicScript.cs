@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Diagnostics.Contracts;
 
 public class LogicScript : MonoBehaviour
 {
-
-    public Transform RestartPoint;
+    public static LogicScript instance;
+    public Vector3 LastCheckPointPos;
+    public GameObject GameOverScreen;
     // Start is called before the first frame update
+
     void Start()
     {
         
@@ -19,9 +22,13 @@ public class LogicScript : MonoBehaviour
     {
         
     }
-
     public void restartGame()
     {
-        transform.position = RestartPoint.position;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void gameOver()
+    {
+        GameOverScreen.SetActive(true);
     }
 }
