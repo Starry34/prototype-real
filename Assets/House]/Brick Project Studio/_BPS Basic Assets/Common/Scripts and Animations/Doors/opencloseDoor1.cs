@@ -14,6 +14,8 @@ namespace SojaExiles
 		public Transform Player;
 
 		private string levelToLoad;
+		[SerializeField]private string where;
+		public AudioSource bigDoorOpen;
 
 		void Start()
 		{
@@ -30,9 +32,8 @@ namespace SojaExiles
 					{
 							if (Input.GetKeyDown(KeyCode.E))
 							{
-								levelToLoad = "Level 1";
+								bigDoorOpen.Play();
 								StartCoroutine(teleportToLab());
-								SceneManager.LoadScene(levelToLoad);
 							}
 					}
 
@@ -42,9 +43,11 @@ namespace SojaExiles
 
 			IEnumerator teleportToLab()
 			{
-				yield return new WaitForSeconds(3.0f);
-			}
+                levelToLoad = where;
+                SceneManager.LoadScene(levelToLoad);
+                yield return new WaitForSeconds(5.0f);
+            }
 
-		}
+        }
 	}
 }

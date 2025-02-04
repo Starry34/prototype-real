@@ -10,6 +10,9 @@ TagManager:
   - logic
   - Black
   - PlayerOBJ
+  - JetPack
+  - Laser
+  - NoBoots
   layers:
   - Default
   - TransparentFX

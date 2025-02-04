@@ -22,7 +22,6 @@ public class Target : MonoBehaviour
     {
         float distance2target = Vector3.Distance(transform.position, targets[targetindex].position);
         agent.destination = targets[targetindex].position;
-        Debug.Log(distance2target);
         if (distance2target > reachDistance)
         {
             anim.SetBool("Walk", true);

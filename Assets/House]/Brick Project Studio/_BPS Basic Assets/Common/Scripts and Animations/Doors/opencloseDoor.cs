@@ -11,6 +11,8 @@ namespace SojaExiles
 		public bool open;
 		public Transform Player;
         public GameObject imgOpenDoor;
+		public AudioSource DoorOpen;
+		public AudioSource DoorClose;
 
 
         void Start()
@@ -61,6 +63,7 @@ namespace SojaExiles
 		{
 			print("you are opening the door");
 			openandclose.Play("Opening");
+			DoorOpen.Play();
 			open = true;
             yield return new WaitForSeconds(.5f);
 		}
@@ -68,6 +71,7 @@ namespace SojaExiles
 		{
 			print("you are closing the door");
 			openandclose.Play("Closing");
+			DoorClose.Play();
 			open = false;
             yield return new WaitForSeconds(.5f);
 		}

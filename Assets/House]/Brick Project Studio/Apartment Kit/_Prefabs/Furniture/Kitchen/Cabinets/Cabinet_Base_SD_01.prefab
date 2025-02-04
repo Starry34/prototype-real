@@ -93,7 +93,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4399150244749549640}
   - component: {fileID: 1920539283515041566}
-  - component: {fileID: 4958267544043016039}
   m_Layer: 0
   m_Name: Drawer Script
   m_TagString: Untagged
@@ -138,21 +137,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4958267544043016039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1789499886875277389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0d5557a01f4e0740bd53d6ed2ab7327, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pull_01: {fileID: 1920539283515041566}
-  open: 0
-  Player: {fileID: 0}
 --- !u!1 &3416032529314076247
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,7 +424,6 @@ GameObject:
   - component: {fileID: 7799673819601049538}
   - component: {fileID: 8968486889880910312}
   - component: {fileID: 217195733}
-  - component: {fileID: 217195732}
   m_Layer: 0
   m_Name: Door_L.008
   m_TagString: Untagged
@@ -535,21 +518,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &217195732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6260647602378257005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e8192f35a44301488ec0f072d9a16fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  openandclose: {fileID: 217195733}
-  open: 0
-  Player: {fileID: 0}
 --- !u!1 &6497343406749975765
 GameObject:
   m_ObjectHideFlags: 0

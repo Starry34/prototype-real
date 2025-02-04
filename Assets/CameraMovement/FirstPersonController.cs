@@ -13,6 +13,8 @@ public class FirstPersonController : MonoBehaviour
     private bool isSprinting => canSprint && Input.GetKey(sprintKey) && characterController.isGrounded;
     private bool shouldJump => Input.GetKey(jumpKey);
     private bool shouldCrouch => Input.GetKeyDown(crouchKey) && !duringCrouchAnimation && characterController.isGrounded;
+    private bool shouldPause => Input.GetKey(Pause);
+
 
     [Header("Functional Options")]
     [SerializeField] private bool canSprint = true;
@@ -26,6 +28,8 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private KeyCode sprintKey = KeyCode.LeftShift;
     [SerializeField] private KeyCode jumpKey = KeyCode.Space;
     [SerializeField] private KeyCode crouchKey = KeyCode.LeftControl;
+    [SerializeField] private KeyCode Pause = KeyCode.P;
+
 
     [Header("Movement Parameters")]
     [SerializeField] private float walkSpeed = 3.0f;
@@ -79,6 +83,33 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float sprintBootSpeed = 9.0f;
     [SerializeField] private float crouchBootSpeed = 2.5f;
 
+    [Header("Jet Pack Parameters")]
+    [SerializeField] private bool jetPack = false;
+
+    [Header("Key paramateres")]
+    [SerializeField] public static int keyValue = 0;
+    [SerializeField] private GameObject key;
+
+    [Header("Pause parameters")]
+    public static bool gameIsPaused;
+    [SerializeField]public GameObject pauseLabel;
+
+    [Header("Sound Parameters")]
+    [SerializeField] public AudioSource walkingSound;
+    [SerializeField] public AudioSource RunningSound;
+    [SerializeField] public AudioSource JumpingSound;
+    [SerializeField] public AudioSource JetPackSound;
+    [SerializeField] public AudioSource JetPackCollectSound;
+    [SerializeField] public AudioSource CashCollectSound;
+    [SerializeField] public AudioSource BootCollectSound;
+    [SerializeField] public AudioSource KeyCollectSound;
+    [SerializeField] public AudioSource PauseSound;
+    [SerializeField] public AudioSource UnPauseSound;
+
+
+
+
+
     private float defaultYPos = 0;
     private float timer;
     public LogicScript logic;
@@ -125,6 +156,9 @@ public class FirstPersonController : MonoBehaviour
         defaultYPos = PlayerCamera.transform.localPosition.y;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        RunningSound.enabled = false;
+        walkingSound.enabled = false;
     }
 
     void Start()
@@ -135,6 +169,11 @@ public class FirstPersonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            gameIsPaused = !gameIsPaused;
+            PauseGame();
+        }
         if (CanMove && playerIsAlive)
         {
             if (JumpBoots == true)
@@ -233,10 +272,18 @@ public class FirstPersonController : MonoBehaviour
         }
         if (CoyoteTimeCounter > 0.0f && jumpBufferCounter > 0.0f)
         {
+
             moveDirection.y = jumpForce;
 
             jumpBufferCounter = 0.0f;
+
         }
+        else if (jetPack == true)
+        {
+            moveDirection.y = jumpForce;
+            jetPack = false;
+        }
+
         if ((shouldJump) && moveDirection.y > 0.0f)
         {
 
@@ -247,34 +294,49 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleJumpBoots()
     {
-        if (characterController.isGrounded)
+        if (jetPack == false)
         {
-            CoyoteTimeCounter = CoyoteTime;
+            if (characterController.isGrounded)
+            {
+                CoyoteTimeCounter = CoyoteTime;
 
-        }
-        else
-        {
-            CoyoteTimeCounter -= Time.deltaTime;
-        }
+            }
+            else
+            {
+                CoyoteTimeCounter -= Time.deltaTime;
+            }
 
-        if ((shouldJump))
-        {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-        if (CoyoteTimeCounter > 0.0f && jumpBufferCounter > 0.0f)
-        {
-            moveDirection.y = BootForce;
+            if ((shouldJump))
+            {
+                jumpBufferCounter = jumpBufferTime;
+            }
+            else
+            {
+                jumpBufferCounter -= Time.deltaTime;
+            }
+            if (CoyoteTimeCounter > 0.0f && jumpBufferCounter > 0.0f)
+            {
+                moveDirection.y = BootForce;
+                JumpingSound.Play();
+                jumpBufferCounter = 0.0f;
+            }
+            if ((shouldJump) && moveDirection.y > 0.0f)
+            {
 
-            jumpBufferCounter = 0.0f;
+                CoyoteTimeCounter = 0.0f;
+            }
         }
-        if ((shouldJump) && moveDirection.y > 0.0f)
+        else 
         {
-
-            CoyoteTimeCounter = 0.0f;
+            if (jetPack == true)
+            {
+                if ((shouldJump && !characterController.isGrounded))
+                {
+                    moveDirection.y = BootForce;
+                    jetPack = false;
+                    JetPackSound.Play();
+                }
+            }
         }
     }
     private void HandleCrouch()
@@ -319,6 +381,34 @@ public class FirstPersonController : MonoBehaviour
             characterController.Move((isCrouching ? crouchSpeed : isSprinting ? sprintSpeed : walkSpeed) * moveDirection * Time.deltaTime);
 
         }
+
+        if (characterController.isGrounded && playerIsAlive == true)
+        {
+            if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+            {
+                if (isSprinting)
+                {
+                    RunningSound.enabled = true;
+                    walkingSound.enabled = false;
+                }
+
+                else
+                {
+                    RunningSound.enabled = false;
+                    walkingSound.enabled = true;
+                }
+            }
+            else
+            {
+                RunningSound.enabled = false;
+                walkingSound.enabled = false;
+            }
+        }
+        else
+        {
+            RunningSound.enabled = false;
+            walkingSound.enabled = false;
+        }
         
     }
 
@@ -351,18 +441,68 @@ public class FirstPersonController : MonoBehaviour
         duringCrouchAnimation = false;
     }
 
+    public void PauseGame()
+    {
+        if (gameIsPaused)
+        {
+            PauseSound.Play();
+            pauseLabel.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            CanMove = false;
+        }
+        else if (!gameIsPaused)
+        {
+            UnPauseSound.Play();
+            pauseLabel.SetActive(false);
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            CanMove = true;
+
+        }
+    }
+
+    public void ResumeGame()
+    {
+        gameIsPaused = !gameIsPaused;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        CanMove = true;
+    }
+
     public void OnTriggerEnter(Collider collisionInfo)
     {
         if (collisionInfo.gameObject.tag == "Boot")
         {
             JumpBoots = true;
+            BootCollectSound.Play();
+            Destroy(collisionInfo.gameObject);
+        }
+
+        if (collisionInfo.gameObject.tag == "NoBoots")
+        {
+            JumpBoots = false;
+        }
+
+        if (collisionInfo.gameObject.tag == "JetPack")
+        {
+            jetPack = true;
+            JetPackCollectSound.Play();
             Destroy(collisionInfo.gameObject);
         }
         if (collisionInfo.gameObject.tag == "Cash")
         {
             Debug.Log("you picked the cash");
+            CashCollectSound.Play();
             CashCollect.charge++;
             Destroy(collisionInfo.gameObject);
+        }
+        if (collisionInfo.gameObject.tag == "Laser")
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            logic.gameOver();
+            playerIsAlive = false;
         }
     }
 
@@ -375,5 +515,22 @@ public class FirstPersonController : MonoBehaviour
             logic.gameOver();
             playerIsAlive = false;
         }
+    }
+
+    public void plusKey()
+    {
+        KeyCollect.key++;
+        KeyCollectSound.Play();
+        Destroy(key);
+    }
+
+    public void Stop()
+    {
+        CanMove = false;
+    }
+
+    public void Continue()
+    {
+        CanMove = true;
     }
 }
