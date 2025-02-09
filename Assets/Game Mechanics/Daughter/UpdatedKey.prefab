@@ -391,8 +391,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.01999999, y: 0.04242905, z: 0.020000016}
-  m_Center: {x: -1.6710963e-10, y: -0.011215014, z: 0.000007632068}
+  m_Size: {x: 0.02, y: 0.055254355, z: 0.1902508}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8892838996075056409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -409,6 +409,7 @@ MonoBehaviour:
   BlurImage: {fileID: 3166607250367529231}
   Player: {fileID: 0}
   keyCollect: {fileID: 0}
+  DialogueTrue: {fileID: 0}
 --- !u!1 &6683454239865136420
 GameObject:
   m_ObjectHideFlags: 0

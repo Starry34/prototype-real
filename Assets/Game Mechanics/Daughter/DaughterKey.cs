@@ -36,7 +36,7 @@ public class DaughterKey : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
-                    keyCollect.plusKey();
+                    keyCollect.plusKey(); 
                 }
             }
         }

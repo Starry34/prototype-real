@@ -41,4 +41,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: f145206d32da28a4b904a531bee1e10b
+  - enabled: 1
+    path: Assets/Scenes/House 1.unity
+    guid: ff40af627dffc7942a30ec3835001d24
+  - enabled: 1
+    path: Assets/Scenes/Continue.unity
+    guid: 9e3806d0987a47749a7b53e5d29f2106
   m_configObjects: {}

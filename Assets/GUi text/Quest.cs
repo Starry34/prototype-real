@@ -5,14 +5,12 @@ using UnityEngine;
 public class Quest : MonoBehaviour
 {
     public GameObject text1;
-    public GameObject blurry;
 
     // Start is called before the first frame update
     void Start()
     {
 
         text1.SetActive(false);
-        blurry.SetActive(false);
     }
 
     // Update is called once per frame
@@ -21,9 +19,21 @@ public class Quest : MonoBehaviour
 
     }
 
-    private void OnCollisionEnter(Collision touch)
+    public void OnTriggerEnter(Collider touch)
     {
-        text1.SetActive(true);
-        blurry.SetActive(true);
+        if (touch.gameObject.tag == "Player")
+        {
+
+            text1.SetActive(true);
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            text1.SetActive(false);
+            Destroy(gameObject);
+        }
     }
 }

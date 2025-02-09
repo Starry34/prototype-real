@@ -15,6 +15,9 @@ namespace SojaExiles
         public AudioSource KeyUnlock;
         public AudioSource KeyLock;
         public static bool Daughter;
+        public bool DialogueOpen;
+
+        public Dialogue Dialogue;
 
 
         public static bool key = false;
@@ -29,6 +32,7 @@ namespace SojaExiles
             Daughter = false;
             imgUnlockedDoor.SetActive(false);
             imgLockedDoor.SetActive(false);
+            DialogueOpen = false;
 
         }
 
@@ -65,9 +69,12 @@ namespace SojaExiles
                             if (open == false && Daughter == false)
                             {
                                 imgLockedDoor.SetActive(true);
-                                if (Input.GetKeyDown(KeyCode.E))
+                                if (DialogueOpen == false)
                                 {
-                                    StartCoroutine(locking());
+                                    if (Input.GetKeyDown(KeyCode.E))
+                                    {
+                                        StartCoroutine(locking());
+                                    }
                                 }
                             }
 
@@ -93,6 +100,8 @@ namespace SojaExiles
         {
             print("the door is locked");
             KeyLock.Play();
+            Dialogue.StartDialogue();
+            DialogueOpen= true;
             yield return new WaitForSeconds(.5f);
         }
         public void OnMouseExit()
@@ -100,6 +109,11 @@ namespace SojaExiles
             imgLockedDoor.SetActive(false);
             imgUnlockedDoor.SetActive(false);
 
+        }
+
+        public void DialogueFalse()
+        {
+            DialogueOpen = false;
         }
     }
 }

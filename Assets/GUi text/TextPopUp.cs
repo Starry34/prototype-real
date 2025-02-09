@@ -1,6 +1,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using UnityEngine;
 
 public class TextPopUp : MonoBehaviour
@@ -9,8 +10,10 @@ public class TextPopUp : MonoBehaviour
     public Transform Player;
     public GameObject Image;
     public GameObject Exclamation;
+    public DialogueAfterPaper DialogueTrue;
     public FirstPersonController StopMoving;
-
+    public bool DialogueOpen;
+    public static int counter;
     [SerializeField] private AudioSource paper;
     [SerializeField] private AudioSource paperDown;
 
@@ -21,6 +24,8 @@ public class TextPopUp : MonoBehaviour
         Exclamation.SetActive(true);
         Image.SetActive(false);
         open = false;
+        DialogueOpen = true;
+        counter = 0;
 
     }
 
@@ -38,16 +43,22 @@ public class TextPopUp : MonoBehaviour
                 {
                     if (open == false)
                     {
-                        if (Input.GetKeyDown(KeyCode.E))
+                        if (DialogueOpen == true)
                         {
-                            StartCoroutine(ImageOnScreen());
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                StartCoroutine(ImageOnScreen());
+                            }
                         }
                     }
                     else if (open == true)
                     {
-                        if (Input.GetKeyDown(KeyCode.E))
+                        if (DialogueOpen == false)
                         {
-                            StartCoroutine(NoImageOnScreen());
+                            if (Input.GetKeyDown(KeyCode.E))
+                            {
+                                StartCoroutine(NoImageOnScreen());
+                            }
                         }
                     }
                 }
@@ -67,6 +78,7 @@ public class TextPopUp : MonoBehaviour
         StopMoving.Stop();
         paper.Play();
         open = true;
+        DialogueOpen = false;
         yield return new WaitForSeconds(.5f);
     }
 
@@ -76,6 +88,13 @@ public class TextPopUp : MonoBehaviour
         StopMoving.Continue();
         open = false;
         paperDown.Play();
+        DialogueTrue.StartDialogue();
+        
         yield return new WaitForSeconds(.5f);
+    }
+
+    public void DialogueFalse()
+    {
+        DialogueOpen = true;
     }
 }

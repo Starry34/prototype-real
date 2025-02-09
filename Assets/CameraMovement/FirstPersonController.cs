@@ -105,6 +105,10 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] public AudioSource KeyCollectSound;
     [SerializeField] public AudioSource PauseSound;
     [SerializeField] public AudioSource UnPauseSound;
+    [SerializeField] public AudioSource Gameover;
+    [SerializeField] public AudioSource LaserDown;
+    [SerializeField] public AudioSource Respawn;
+
 
 
 
@@ -479,6 +483,13 @@ public class FirstPersonController : MonoBehaviour
             Destroy(collisionInfo.gameObject);
         }
 
+        if (collisionInfo.gameObject.tag == "PutBack")
+        {
+            JumpBoots = true;
+            Respawn.Play();
+            Destroy(collisionInfo.gameObject);
+        }
+
         if (collisionInfo.gameObject.tag == "NoBoots")
         {
             JumpBoots = false;
@@ -501,6 +512,7 @@ public class FirstPersonController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            LaserDown.Play();
             logic.gameOver();
             playerIsAlive = false;
         }
@@ -512,6 +524,7 @@ public class FirstPersonController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            Gameover.Play();
             logic.gameOver();
             playerIsAlive = false;
         }
@@ -527,6 +540,8 @@ public class FirstPersonController : MonoBehaviour
     public void Stop()
     {
         CanMove = false;
+        walkingSound.enabled = false;
+        RunningSound.enabled = false;
     }
 
     public void Continue()

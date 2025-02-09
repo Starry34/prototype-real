@@ -13,6 +13,7 @@ TagManager:
   - JetPack
   - Laser
   - NoBoots
+  - PutBack
   layers:
   - Default
   - TransparentFX
